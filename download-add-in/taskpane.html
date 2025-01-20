@@ -24,6 +24,7 @@
   <body>
     <h1>Email Attachments</h1>
     <button id="downloadAttachment">Download Attachments</button>
+    <p id="msg"></p>
   </body>
   <script>
     // Wait for Office to be ready
@@ -33,37 +34,42 @@
       }
     });
 
-    function downloadAttachment(attachment){
-      office.context.mailbox.getAttachmentContentAsync(attachment.id,function(result){
-        if(result.status===Office.AsyncResultStatus.Succeded){
-          const attachmentContent=result.value.content;
-          const blob=new Blob([attachmentContent],{type:"application/octet-stream"});
-          const link=document.createElement("a");
-          link.href=URL.createObjectURL(blob);
-          link.download=attachment.name;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }else{
-          console.error("Failed to download"+result.error.message)
+    function downloadAttachment(attachment) {
+      office.context.mailbox.getAttachmentContentAsync(
+        attachment.id,
+        function (result) {
+          if (result.status === Office.AsyncResultStatus.Succeded) {
+            const attachmentContent = result.value.content;
+            const blob = new Blob([attachmentContent], {
+              type: "application/octet-stream",
+            });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = attachment.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } else {
+            // No attachments found
+            document.getElementById("msg").textContent =
+              "Failed to download";
+          }
         }
-      })
+      );
     }
 
-    function downloadAll(){
+    function downloadAll() {
       const item = Office.context.mailbox.item;
-      if(item.attachments && item.attachments.length>0){
-        item.attachments.forEach((attachment)=>{
+      if (item.attachments && item.attachments.length > 0) {
+        item.attachments.forEach((attachment) => {
           download(attachment);
-        })
-      }else{
-        alert("No attachment found")
+        });
+      } else {
+        alert("No attachment found");
       }
     }
 
-
     // Bind the button to the function
     document.getElementById("downloadAttachment").onclick = downloadAll;
-    
   </script>
 </html>
