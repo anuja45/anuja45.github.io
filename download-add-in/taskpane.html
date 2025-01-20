@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <title>Download Attachment</title>
@@ -123,6 +123,103 @@
         });
       } else {
         alert("No attachment found");
+      }
+    }
+
+    // Bind the button to the function
+    document.getElementById("downloadAttachment").onclick = downloadAll;
+  </script>
+</html>
+ -->
+
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>Download Attachments</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      #attachmentList {
+        margin-top: 15px;
+        padding-left: 15px;
+      }
+      li {
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Email Attachments</h1>
+    <button id="downloadAttachment">Download Attachments</button>
+    <ul id="attachmentList"></ul>
+  </body>
+  <script>
+    // Wait for Office to be ready
+    Office.onReady(() => {
+      if (Office.context.mailbox) {
+        console.log("Add-in is ready!");
+      }
+    });
+
+    // Function to download a single attachment
+    function downloadAttachment(attachment) {
+      Office.context.mailbox.item.getAttachmentContentAsync(
+        attachment.id,
+        function (result) {
+          if (result.status === Office.AsyncResultStatus.Succeeded) {
+            const attachmentContent = result.value.content;
+            const contentType = result.value.format === "base64" ? "base64" : "raw";
+
+            // Decode Base64 content if necessary
+            let blob;
+            if (contentType === "base64") {
+              const byteCharacters = atob(attachmentContent); // Decode Base64 string
+              const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+              const byteArray = new Uint8Array(byteNumbers);
+              blob = new Blob([byteArray], { type: "application/octet-stream" });
+            } else {
+              blob = new Blob([attachmentContent], { type: "application/octet-stream" });
+            }
+
+            // Create a download link and trigger download
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = attachment.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } else {
+            console.error("Failed to get attachment content:", result.error.message);
+          }
+        }
+      );
+    }
+
+    // Function to download all attachments
+    function downloadAll() {
+      const item = Office.context.mailbox.item;
+      const attachmentList = document.getElementById("attachmentList");
+      attachmentList.innerHTML = ""; // Clear the list
+
+      if (item.attachments && item.attachments.length > 0) {
+        item.attachments.forEach((attachment) => {
+          // Add each attachment to the list
+          const listItem = document.createElement("li");
+          listItem.textContent = `Downloading: ${attachment.name}`;
+          attachmentList.appendChild(listItem);
+
+          // Download the attachment
+          downloadAttachment(attachment);
+        });
+      } else {
+        alert("No attachments found.");
       }
     }
 
