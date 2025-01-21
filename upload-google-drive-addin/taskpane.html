@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Send Attachment to Google Drive</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      ul {
+        margin-top: 15px;
+        padding-left: 15px;
+      }
+      li {
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Send Email Attachments to Google Drive</h1>
+    <button id="sendToDrive">Send Attachments</button>
+    <ul id="attachmentList"></ul>
+  </body>
+  <script>
+    // Wait for Office to be ready
+    Office.onReady(() => {
+      if (Office.context.mailbox) {
+        console.log("Add-in is ready!");
+      }
+    });
+
+    // Function to upload a file to Google Drive
+    async function uploadToGoogleDrive(fileName, fileContent, mimeType, accessToken) {
+      const apiEndpoint = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
+      
+      // Create metadata for the file
+      const metadata = {
+        name: fileName,
+      };
+
+      // Create a FormData object
+      const form = new FormData();
+      form.append(
+        "metadata",
+        new Blob([JSON.stringify(metadata)], { type: "application/json" })
+      );
+      form.append("file", new Blob([fileContent], { type: mimeType }));
+
+      // Make the API request
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: form,
+      });
+
+      if (response.ok) {
+        console.log(`${fileName} uploaded successfully to Google Drive.`);
+      } else {
+        console.error(`Failed to upload ${fileName}:`, await response.text());
+      }
+    }
+
+    // Function to send an attachment to Google Drive
+    function sendAttachmentToGoogleDrive(attachment, accessToken) {
+      Office.context.mailbox.item.getAttachmentContentAsync(
+        attachment.id,
+        async function (result) {
+          if (result.status === Office.AsyncResultStatus.Succeeded) {
+            const fileName = attachment.name;
+            const fileContent = atob(result.value.content); // Decode Base64 content
+            const mimeType = attachment.contentType;
+
+            // Call the Google Drive upload function
+            await uploadToGoogleDrive(fileName, fileContent, mimeType, accessToken);
+          } else {
+            console.error("Failed to retrieve attachment content:", result.error.message);
+          }
+        }
+      );
+    }
+
+    // Function to send all attachments to Google Drive
+    function sendAllAttachments() {
+      const accessToken = prompt("Enter your Google Drive Access Token:");
+      const item = Office.context.mailbox.item;
+      const attachmentList = document.getElementById("attachmentList");
+      attachmentList.innerHTML = ""; // Clear the list
+
+      if (item.attachments && item.attachments.length > 0) {
+        item.attachments.forEach((attachment) => {
+          // Add the attachment to the list
+          const listItem = document.createElement("li");
+          listItem.textContent = `Sending: ${attachment.name}`;
+          attachmentList.appendChild(listItem);
+
+          // Send the attachment to Google Drive
+          sendAttachmentToGoogleDrive(attachment, accessToken);
+        });
+      } else {
+        alert("No attachments found in the email.");
+      }
+    }
+
+    // Bind the button to the function
+    document.getElementById("sendToDrive").onclick = sendAll
