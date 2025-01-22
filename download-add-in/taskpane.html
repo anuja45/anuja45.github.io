@@ -1,83 +1,4 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Download Attachment</title>
-    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      h1 {
-        font-size: 18px;
-        margin-bottom: 10px;
-      }
-      #attachmentList {
-        margin-top: 15px;
-        padding-left: 15px;
-      }
-      li {
-        margin-bottom: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Email Attachments</h1>
-    <button id="downloadAttachment">Download Attachments</button>
-    <p id="msg"></p>
-  </body>
-  <script>
-    // Wait for Office to be ready
-    Office.onReady(() => {
-      if (Office.context.mailbox) {
-        console.log("Add-in is ready!");
-      }
-    });
-
-    function downloadAttachment(attachment) {
-      office.context.mailbox.getAttachmentContentAsync(
-        attachment.id,
-        function (result) {
-          if (result.status === Office.AsyncResultStatus.Succeded) {
-            const attachmentContent = result.value.content;
-            const blob = new Blob([attachmentContent], {
-              type: "application/octet-stream",
-            });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = attachment.name;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          } else {
-            // No attachments found
-            document.getElementById("msg").textContent =
-              "Failed to download";
-          }
-        }
-      );
-    }
-
-    function downloadAll() {
-      const item = Office.context.mailbox.item;
-      if (item.attachments && item.attachments.length > 0) {
-        item.attachments.forEach((attachment) => {
-          download(attachment);
-        });
-      } else {
-        alert("No attachment found");
-      }
-    }
-
-    // Bind the button to the function
-    document.getElementById("downloadAttachment").onclick = downloadAll;
-  </script>
-</html>
-=======
-
-
- <!DOCTYPE html>
 <html>
   <head>
     <title>Download Attachments</title>
@@ -105,14 +26,12 @@
     <button id="downloadAttachment">Download Attachments</button>
   </body>
   <script>
-    // Wait for Office to be ready
     Office.onReady(() => {
       if (Office.context.mailbox) {
         console.log("Add-in is ready!");
       }
     });
 
-    // Function to download a single attachment
     function downloadAttachment(attachment) {
       Office.context.mailbox.item.getAttachmentContentAsync(
         attachment.id,
@@ -121,10 +40,9 @@
             const attachmentContent = result.value.content;
             const contentType = result.value.format === "base64" ? "base64" : "raw";
 
-            // Decode Base64 content if necessary
             let blob;
             if (contentType === "base64") {
-              const byteCharacters = atob(attachmentContent); // Decode Base64 string
+              const byteCharacters = atob(attachmentContent); 
               const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
               const byteArray = new Uint8Array(byteNumbers);
               blob = new Blob([byteArray], { type: "application/octet-stream" });
@@ -132,7 +50,6 @@
               blob = new Blob([attachmentContent], { type: "application/octet-stream" });
             }
 
-            // Create a download link and trigger download
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = attachment.name;
@@ -146,7 +63,6 @@
       );
     }
 
-    // Function to download all attachments
     function downloadAll() {
       const item = Office.context.mailbox.item;
 
@@ -159,8 +75,6 @@
       }
     }
 
-    // Bind the button to the function
     document.getElementById("downloadAttachment").onclick = downloadAll;
   </script>
 </html>
->>>>>>> 41d6ef6e65bbe403a19803b614a5f5da2bb800f1
