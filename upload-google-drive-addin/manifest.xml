@@ -3,12 +3,12 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0" xsi:type="MailApp">
-  <Id>e305aa79-a472-4583-91d9-21e4a8da406d</Id>
+  <Id>0d265b91-1846-4281-a6dd-85f960d23ad4</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>Vsky</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="QuickAttach"/>
-  <Description DefaultValue="Download attachments"/>
+  <DisplayName DefaultValue="Export"/>
+  <Description DefaultValue="Export attachments"/>
   <IconUrl DefaultValue="https://anuja45.github.io/icon%2032.png"/>
   <HighResolutionIconUrl DefaultValue="https://anuja45.github.io/icon%2064.png"/>
   <SupportUrl DefaultValue="https://learn.microsoft.com/office/dev/add-ins/overview/office-add-in-code-samples"/>
@@ -24,7 +24,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://anuja45.github.io/download-add-in/taskpane.html"/>
+        <SourceLocation DefaultValue="https://anuja45.github.io/upload-google-drive-addin/taskpane.html"/>
         <RequestedHeight>250</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -79,15 +79,15 @@
         <bt:Image id="Icon.80x80" DefaultValue="https://anuja45.github.io/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://anuja45.github.io/download-add-in/taskpane.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://anuja45.github.io/upload-google-drive-addin/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="CommandsGroup.Label" DefaultValue="Vsky Add-in"/>
-        <bt:String id="downloadButton.Label" DefaultValue="Download Attachments"/>
-        <bt:String id="downloadButton.SupertipTitle" DefaultValue="Download Attachments"/>
+        <bt:String id="downloadButton.Label" DefaultValue="Export Attachments"/>
+        <bt:String id="downloadButton.SupertipTitle" DefaultValue="Export Attachments"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="downloadButton.SupertipText" DefaultValue="Click to download attachments in this email."/>
+        <bt:String id="downloadButton.SupertipText" DefaultValue="Click to Export attachments in this email."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
