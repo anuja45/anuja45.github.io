@@ -74,8 +74,8 @@
 
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://anuja45.github.io/icon%2032.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://anuja45.github.io/icon%2064.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://anuja45.github.io/icon-32.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://anuja45.github.io/icon-64.png"/>
         <bt:Image id="Icon.80x80" DefaultValue="https://anuja45.github.io/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
