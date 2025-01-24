@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <title>Send to Google Drive</title>
@@ -125,6 +125,162 @@
           body: fileContent,
         }
       );
+    }
+
+    document.getElementById("sendToDrive").onclick = sendToGoogleDrive;
+  </script>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Send to Google Drive</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+  </head>
+  <body>
+    <h1>Send Attachments to Google Drive</h1>
+    <button id="sendToDrive">Send Attachments to Google Drive</button>
+    <div id="status"></div>
+  </body>
+  <script>
+    Office.onReady(() => {
+      if (Office.context.mailbox) {
+        console.log("Add-in is ready.");
+      } else {
+        console.error("Office context is not available.");
+      }
+    });
+
+    // Send attachments to Google Drive
+    async function sendToGoogleDrive() {
+      try {
+        const item = Office.context.mailbox.item;
+
+        if (!item.attachments || item.attachments.length === 0) {
+          document.getElementById("status").innerText =
+            "No attachments found in this email.";
+          return;
+        }
+
+        document.getElementById("status").innerText = "Processing attachments...";
+
+        // Authenticate with Google Drive API
+        const token = await authenticateWithGoogle();
+        console.log("Google Drive authentication successful.");
+
+        for (const attachment of item.attachments) {
+          const attachmentContent = await getAttachmentContent(attachment.id);
+
+          const response = await uploadToGoogleDrive(
+            token,
+            attachment.name,
+            attachmentContent
+          );
+
+          if (response.ok) {
+            document.getElementById(
+              "status"
+            ).innerText += `Uploaded: ${attachment.name}\n`;
+          } else {
+            document.getElementById(
+              "status"
+            ).innerText += `Failed to upload: ${attachment.name}\n`;
+          }
+        }
+      } catch (error) {
+        console.error("Error during Google Drive upload:", error);
+        document.getElementById("status").innerText =
+          "An error occurred. Check the console for details.";
+      }
+    }
+
+    // Get attachment content
+    function getAttachmentContent(attachmentId) {
+      return new Promise((resolve, reject) => {
+        Office.context.mailbox.getCallbackTokenAsync({ isRest: true }, (result) => {
+          if (result.status === Office.AsyncResultStatus.Succeeded) {
+            const token = result.value;
+            const ewsUrl = Office.context.mailbox.ewsUrl;
+
+            fetch(`${ewsUrl}/ews/exchange.asmx`, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/soap+xml",
+              },
+              body: `<AttachmentId>${attachmentId}</AttachmentId>`,
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.blob();
+              })
+              .then(resolve)
+              .catch(reject);
+          } else {
+            reject(result.error);
+          }
+        });
+      });
+    }
+
+    // Authenticate with Google Drive
+    async function authenticateWithGoogle() {
+      const CLIENT_ID =
+        "1053749502683-b154jhi9inbr2vqbsb59eai21l59af3m.apps.googleusercontent.com";
+      const API_KEY = "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";
+      const SCOPES = "https://www.googleapis.com/auth/drive.file";
+
+      return new Promise((resolve, reject) => {
+        gapi.load("client:auth2", () => {
+          gapi.client
+            .init({
+              apiKey: API_KEY,
+              clientId: CLIENT_ID,
+              scope: SCOPES,
+            })
+            .then(() => {
+              const authInstance = gapi.auth2.getAuthInstance();
+              authInstance
+                .signIn()
+                .then((user) => {
+                  const token = user.getAuthResponse().access_token;
+                  resolve(token);
+                })
+                .catch((error) => {
+                  console.error("Google sign-in failed:", error);
+                  reject(error);
+                });
+            })
+            .catch((error) => {
+              console.error("Google API client initialization failed:", error);
+              reject(error);
+            });
+        });
+      });
+    }
+
+    // Upload to Google Drive
+    async function uploadToGoogleDrive(token, fileName, fileContent) {
+      console.log(`Uploading file: ${fileName}`);
+      return fetch(
+        "https://www.googleapis.com/upload/drive/v3/files?uploadType=media",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/octet-stream",
+          },
+          body: fileContent,
+        }
+      ).catch((error) => {
+        console.error("File upload failed:", error);
+        throw error;
+      });
     }
 
     document.getElementById("sendToDrive").onclick = sendToGoogleDrive;
