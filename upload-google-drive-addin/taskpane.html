@@ -9,9 +9,11 @@
     <button id="sendToDrive">Send Attachments to Google Drive</button>
     <div id="status"></div>
   </body>
- <script>
+  <script>
     Office.onReady(() => {
-      document.getElementById("sendToDrive").onclick = sendToGoogleDrive;
+      if(Office.context.mailbox){
+        console.log("Add-in is ready")
+      }
     });
 
     // Fetch attachments and upload to Google Drive
@@ -88,8 +90,8 @@
 
     // Authenticate with Google
     async function authenticateWithGoogle() {
-      const CLIENT_ID = "1053749502683-5ral4h2u7e2ku8ivt9uq2ad0c9mgnnnf.apps.googleusercontent.com";
-      const API_KEY = "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";
+      const CLIENT_ID = "1053749502683-b154jhi9inbr2vqbsb59eai21l59af3m.apps.googleusercontent.com";
+      const API_KEY = "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";
       const SCOPES = "https://www.googleapis.com/auth/drive.file";
 
       return new Promise((resolve, reject) => {
@@ -124,5 +126,7 @@
         }
       );
     }
+
+    document.getElementById("sendToDrive").onclick = sendToGoogleDrive;
   </script>
 </html>
