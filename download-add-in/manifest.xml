@@ -24,7 +24,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://anuja45.github.io/taskpane.html"/>
+        <SourceLocation DefaultValue="https://anuja45.github.io/download-add-in/taskpane.html"/>
         <RequestedHeight>250</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -79,7 +79,7 @@
         <bt:Image id="Icon.80x80" DefaultValue="https://anuja45.github.io/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://anuja45.github.io/taskpane.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://anuja45.github.io/download-add-in/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="CommandsGroup.Label" DefaultValue="Vsky Add-in"/>
